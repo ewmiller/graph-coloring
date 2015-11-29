@@ -1,1 +1,1 @@
-javac -d bin src/main/java/GraphColoring/GraphColoring.java
+javac -g -d bin src/main/java/GraphColoring/*.java

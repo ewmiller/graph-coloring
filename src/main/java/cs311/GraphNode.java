@@ -1,5 +1,3 @@
-package cs311;
-
 public class GraphNode {
   int id;
   GraphNode parent;
