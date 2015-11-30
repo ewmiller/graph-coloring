@@ -36,7 +36,12 @@ public class GraphColoring {
   private void dfs(List<List<Integer>> graph, int v){
     visited[v] = true;
     // use adjacency list to find adjacent vertices
-    for(int w : graph.get(v)){
+    for(int i = 0; i < graph.get(v).size(); i ++){
+      // assign reference to the next vertex that v is adjacent to
+      int w = graph.get(v).get(i);
+      if(cycle != null){
+        return;
+      }
       // if adjacent vertex hasn't been visited, recurse
       if(!visited[w]){
         parent[w] = v;
@@ -44,16 +49,23 @@ public class GraphColoring {
         dfs(graph, w);
       }
       // if a neighboring vertex has same color, graph is not two-colorable
-      else if(colors[w] == colors[v]){
+      else if (visited[w] && (colors[w] == colors[v])) {
+        is2C = false;
+        System.out.println("Vertices " + w + " and " + v + " have same color.");
         cycle = new Stack<Integer>();
-        cycle.push(w);
-        for(int x = v; x != w; x = parent[x]){
+        cycle.push(v);
+        
+        //for some reason, two nodes with same color both have 0 as a parent,
+        //but they're adjacent to each other. This shouldn't be possible.
+        for (int x = w; x != v; x = parent[x]) {
+          if(x == 0){
+            System.out.println("Vertex " + x + " has no parent.");
+            break;
+          }
+          System.out.println("Adding " + x + " to stack.");
           cycle.push(x);
         }
-        cycle.push(w);
-        System.out.println("Graph is not two-colorable.");
-        is2C = false;
-        return;
+        cycle.push(v);
       }
     }
   }
