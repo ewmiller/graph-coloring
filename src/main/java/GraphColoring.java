@@ -13,7 +13,7 @@ public class GraphColoring {
     this.graph = graph;
     vertices = graph.size();
     colors = new int[vertices + 1]; // zero index will not be used
-    visted = new boolean[vertices + 1]; // same
+    visited = new boolean[vertices + 1]; // same
     parent = new int[vertices + 1];
   }
 
