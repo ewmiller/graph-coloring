@@ -40,11 +40,11 @@ public class GraphColoring {
       // if adjacent vertex hasn't been visited, recurse
       if(!visited[w]){
         parent[w] = v;
-        color[w] = !color[v];
+        colors[w] = !colors[v];
         dfs(graph, w);
       }
       // if a neighboring vertex has same color, graph is not two-colorable
-      else if(color[w] == color[v]){
+      else if(colors[w] == colors[v]){
         cycle = new Stack<Integer>();
         cycle.push(w);
         for(int x = v; x != w; x = parent[x]){
