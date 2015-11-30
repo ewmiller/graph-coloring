@@ -3,21 +3,34 @@ import java.util.*;
 
 public class GraphColoring {
 
-  public GraphColoring(){}
+  int vertices;
+  List<List<Integer>> graph;
+  int[] colors;
+  boolean[] visited;
+  int[] parent;
 
-  public boolean isTwoColorable(List<List<Integer>> graph){
+  public GraphColoring(List<List<Integer>> graph){
+    this.graph = graph;
+    vertices = graph.size();
+    colors = new int[vertices + 1]; // zero index will not be used
+    visted = new boolean[vertices + 1]; // same
+    parent = new int[vertices + 1];
+  }
+
+  // uses a DFS to determine if graph is two-colorable
+  public boolean isTwoColorable(){
     return true;
   }
 
   public static void main(String[] args) {
     List<List<Integer>> graph = new ArrayList<List<Integer>>();
     graph = scanGraph(args[0]);
-    GraphColoring gc = new GraphColoring();
-    System.out.println(gc.isTwoColorable(graph));
+    GraphColoring gc = new GraphColoring(graph);
+    System.out.println(gc.isTwoColorable());
   }
 
+  // scans graph file in and converts it to an adjacency list
   private static List<List<Integer>> scanGraph(String arg){
-    // method for scanning graph file in and converting it to an adjacency list
 
     List<List<Integer>> res = new ArrayList<List<Integer>>();
     List<String> scanned = new ArrayList<String>();
