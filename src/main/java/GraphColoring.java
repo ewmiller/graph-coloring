@@ -3,23 +3,59 @@ import java.util.*;
 
 public class GraphColoring {
 
-  int vertices;
-  List<List<Integer>> graph;
-  int[] colors;
-  boolean[] visited;
-  int[] parent;
+  // private variables to manage DFS process
+  private boolean is2C;
+  private int vertices;
+  private List<List<Integer>> graph;
+  private boolean[] colors;
+  private boolean[] visited;
+  private int[] parent;
+  private Stack<Integer> cycle;
 
+  // constructor initializes variables
   public GraphColoring(List<List<Integer>> graph){
     this.graph = graph;
-    vertices = graph.size();
-    colors = new int[vertices + 1]; // zero index will not be used
-    visited = new boolean[vertices + 1]; // same
-    parent = new int[vertices + 1];
+    this.vertices = graph.size();
+    this.colors = new boolean[vertices + 1]; // zero index will not be used
+    this.visited = new boolean[vertices + 1]; // same
+    this.parent = new int[vertices + 1]; // same
+    this.is2C = true;
   }
 
   // uses a DFS to determine if graph is two-colorable
   public boolean isTwoColorable(){
-    return true;
+    //for every vertex, if it hasn't been visited, do a DFS from it
+    for(int i = 1; i < graph.size(); i++){
+      if(!visited[i]){
+        dfs(graph, i);
+      }
+    }
+    return is2C;
+  }
+
+  private void dfs(List<List<Integer>> graph, int v){
+    visited[v] = true;
+    // use adjacency list to find adjacent vertices
+    for(int w : graph.get(v)){
+      // if adjacent vertex hasn't been visited, recurse
+      if(!visited[w]){
+        parent[w] = v;
+        color[w] = !color[v];
+        dfs(graph, w);
+      }
+      // if a neighboring vertex has same color, graph is not two-colorable
+      else if(color[w] == color[v]){
+        cycle = new Stack<Integer>();
+        cycle.push(w);
+        for(int x = v; x != w; x = parent[x]){
+          cycle.push(x);
+        }
+        cycle.push(w);
+        System.out.println("Graph is not two-colorable.");
+        is2C = false;
+        return;
+      }
+    }
   }
 
   public static void main(String[] args) {
