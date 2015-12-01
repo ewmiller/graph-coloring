@@ -25,23 +25,30 @@ public class GraphColoring {
   // uses a DFS to determine if graph is two-colorable
   public boolean isTwoColorable(){
     //for every vertex, if it hasn't been visited, do a DFS from it
-    for(int i = 1; i < graph.size(); i++){
+    for(int i = 0; i < graph.size(); i++){
       if(!visited[i]){
+        // try to see if this can be done synchronously
+        // wait for dfs call to return before iterating again?
         dfs(graph, i);
       }
     }
+    System.out.println(Arrays.toString(parent));
     return is2C;
   }
 
   private void dfs(List<List<Integer>> graph, int v){
+    //set that v has been visited
     visited[v] = true;
+
     // use adjacency list to find adjacent vertices
     for(int i = 0; i < graph.get(v).size(); i ++){
       // assign reference to the next vertex that v is adjacent to
       int w = graph.get(v).get(i);
+      // stops the process if necessary
       if(cycle != null){
         return;
       }
+      // 12/1: there must be something wrong with this
       // if adjacent vertex hasn't been visited, recurse
       if(!visited[w]){
         parent[w] = v;
@@ -49,15 +56,15 @@ public class GraphColoring {
         dfs(graph, w);
       }
       // if a neighboring vertex has same color, graph is not two-colorable
-      else if (visited[w] && (colors[w] == colors[v])) {
+      else if (colors[w] == colors[v]) {
         is2C = false;
-        System.out.println("Vertices " + w + " and " + v + " have same color.");
         cycle = new Stack<Integer>();
-        cycle.push(v);
-        
+        cycle.push(w);
+
         //for some reason, two nodes with same color both have 0 as a parent,
         //but they're adjacent to each other. This shouldn't be possible.
-        for (int x = w; x != v; x = parent[x]) {
+        //is the iterative visiting process outpacing the dfs?
+        for (int x = v; x != w; x = parent[x]) {
           if(x == 0){
             System.out.println("Vertex " + x + " has no parent.");
             break;
