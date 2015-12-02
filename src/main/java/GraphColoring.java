@@ -16,9 +16,9 @@ public class GraphColoring {
   public GraphColoring(List<List<Integer>> graph){
     this.graph = graph;
     this.vertices = graph.size();
-    this.colors = new boolean[vertices + 1]; // zero index will not be used
-    this.visited = new boolean[vertices + 1]; // same
-    this.parent = new int[vertices + 1]; // same
+    this.colors = new boolean[vertices]; // zero index will not be used
+    this.visited = new boolean[vertices]; // same
+    this.parent = new int[vertices]; // same
     this.is2C = true;
   }
 
@@ -27,12 +27,9 @@ public class GraphColoring {
     //for every vertex, if it hasn't been visited, do a DFS from it
     for(int i = 0; i < graph.size(); i++){
       if(!visited[i]){
-        // try to see if this can be done synchronously
-        // wait for dfs call to return before iterating again?
         dfs(graph, i);
       }
     }
-    System.out.println(Arrays.toString(parent));
     return is2C;
   }
 
@@ -48,7 +45,6 @@ public class GraphColoring {
       if(cycle != null){
         return;
       }
-      // 12/1: there must be something wrong with this
       // if adjacent vertex hasn't been visited, recurse
       if(!visited[w]){
         parent[w] = v;
@@ -58,18 +54,13 @@ public class GraphColoring {
       // if a neighboring vertex has same color, graph is not two-colorable
       else if (colors[w] == colors[v]) {
         is2C = false;
+        // attempt to find cycle that caused graph to not be 2-colorable
         cycle = new Stack<Integer>();
         cycle.push(w);
-
-        //for some reason, two nodes with same color both have 0 as a parent,
-        //but they're adjacent to each other. This shouldn't be possible.
-        //is the iterative visiting process outpacing the dfs?
         for (int x = v; x != w; x = parent[x]) {
           if(x == 0){
-            System.out.println("Vertex " + x + " has no parent.");
             break;
           }
-          System.out.println("Adding " + x + " to stack.");
           cycle.push(x);
         }
         cycle.push(v);
@@ -81,7 +72,47 @@ public class GraphColoring {
     List<List<Integer>> graph = new ArrayList<List<Integer>>();
     graph = scanGraph(args[0]);
     GraphColoring gc = new GraphColoring(graph);
-    System.out.println(gc.isTwoColorable());
+    boolean res = gc.isTwoColorable();
+    gc.writeOutput(args[0], res);
+  }
+
+  private void writeOutput(String arg, boolean res){
+    String writePath;
+    if(arg.equals("1"))
+      writePath = String.format("./largegraph1output");
+    else if(arg.equals("2"))
+      writePath = String.format("./largegraph2output");
+    else
+      writePath = String.format("./smallgraphoutput");
+    try{
+    File file = new File(writePath);
+    FileWriter fWriter = new FileWriter(file);
+    PrintWriter pWriter = new PrintWriter(fWriter);
+    if(res){
+      pWriter.print("This graph is two-colorable.\n");
+      pWriter.print("Set #1 consists of: \n");
+      for(int i = 1; i < colors.length; i++){
+        if(colors[i])
+          pWriter.print(i + "\n");
+      }
+      pWriter.print("Set #2 consists of: \n");
+      for(int i = 1; i < colors.length; i++){
+        if(!colors[i])
+          pWriter.print(i + "\n");
+      }
+    }
+    else{
+      pWriter.print("This graph is not two-colorable.\n");
+      pWriter.print("The cycle that makes it non-colorable is as follows:\n");
+      for(int i = cycle.size(); i > 0; i--){
+        int x = cycle.pop();
+        pWriter.print(x + "\n");
+      }
+    }
+    pWriter.close();
+  } catch(IOException e) {
+    e.printStackTrace(System.out);
+  }
   }
 
   // scans graph file in and converts it to an adjacency list
@@ -119,7 +150,6 @@ public class GraphColoring {
     //initialize adjacency list with correct number of vertices
     //the 0 index will be empty for ease of reference later
     int v = Integer.parseInt(scanned.get(0));
-    System.out.println("Total vertices: " + v);
     for(int i = 0; i <= v; i++){
       res.add(new ArrayList<Integer>());
     }
